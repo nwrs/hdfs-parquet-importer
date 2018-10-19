@@ -8,6 +8,12 @@ import scala.io.Source
 
 package object importer {
 
+  /**
+    * Populate a spark schema using a config file of the format columnName=Type
+    * Order of fields in config file must strictly match CSV file.
+    * @param file Path to schema file
+    * @return StructType schema
+    */
   def createSchema(file:String):StructType = {
     val fields = Source.fromFile(file)
       .getLines()
@@ -15,16 +21,25 @@ package object importer {
       .map(_.split("="))
       .map( s => (s(0).trim,s(1).trim))
       .map( e => e._2 match {
-        case "String" => new ColumnName(s"${e._1}").string
-        case "Long" => new ColumnName(s"${e._1}").long
-        case "Double" => new ColumnName(s"${e._1}").double
-        case "Boolean" => new ColumnName(s"${e._1}").boolean
-        // TODO more types as required...
+        case "String" => new ColumnName(e._1).string
+        case "Long" => new ColumnName(e._1).long
+        case "Int" => new ColumnName(e._1).int
+        case "Double" => new ColumnName(e._1).double
+        case "Float" => new ColumnName(e._1).float
+        case "Boolean" => new ColumnName(e._1).boolean
+        // Allow match error for unsupported types
+        // TODO more types as required ?
       })
     StructType(fields.toSeq)
   }
 
-  // TODO scala doc and comment me please and hide in a utility class :-)
+  /**
+    * Enriches a dataframe with date, year and column fields to allow for smarter Parquet partitioning
+    * @param dateTimeCol A date time string of format "yyyy-mm-dd hh:mm"
+    * @param df Dataframe
+    * @param sc Implicit spark session
+    * @return enriched dataframe
+    */
   def dateEnrichFromDateTimeStr(dateTimeCol:String, df:DataFrame)(implicit sc:SparkSession):DataFrame= {
     val dateTimeRegEx = """([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2})""".r
     sc.sqlContext.udf.register("extract_date", (dateTime: String) => if (dateTime !=null) dateTime.split(" ")(0) else "")
@@ -51,8 +66,15 @@ package object importer {
       .withColumn("month", callUDF("extract_month", col(dateTimeCol)))
   }
 
-  // filter out suspect rows - weird hack to get around rare problem in twitter datasets, only used manually
-  def filterOutSuspectRows(df: DataFrame)(implicit sc:SparkSession):DataFrame = {
+  /**
+    * Filter out suspect rows, a workaround for occasional (~ 1/100000) corrupt rows in twitter datasets that can break the parquet export
+    * Issues may be be related to double quote escaping at the start of non-latin character-set tweets?
+    * N.B. Only usable for datasets using the specific Twitter schema!
+    * @param df Dataframe to cleanse
+    * @param sc Implicit Spark session
+    * @return Cleansed dataframe
+    */
+  def filterOutSuspectTwitterRows(df: DataFrame)(implicit sc:SparkSession):DataFrame = {
     val pattern = """([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2})""".r
     import sc.implicits._
     val badTweetIds = df.select("tweetid", "tweet_time").map { r =>
