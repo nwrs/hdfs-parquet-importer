@@ -34,25 +34,21 @@ $java -jar hdfs-parquet-importer-1.0-SNAPSHOT-packaged.jar --help
 
 HDFS Parquet CSV file importer [github.com/nwrs/hdfs-parquet-importer]
 
-For usage see below:
-  -e, --dateEnrich  <date_time src col>      Enrich string formatted date/time
-                                             col to a date/year/month columns to
-                                             allow smarter partitioning
-  -l, --delimeter  <arg>                     CSV delimeter character, default is
-                                             ','
-  -d, --destFile  <arg>                      Destination Parquet file to export
-                                             to. Local FS or HDFS paths
-                                             supported
-  -p, --partitionCols  <column,column,...>   Partition columns
-  -f, --schemaFile  </path/to/file.schema>   Schema file
-  -q, --slashEscapes                         Use '\"' as an escape character
-                                             instead of '""' to denote quotes
-                                             within a quote
-  -o, --sortCol  <column>                    Sort column
-  -t, --sparkThreads  <arg>                  Numbner of Spark threads, default
-                                             is # processors
-  -s, --srcFile  </path/to/file.csv>         CSV file to import
+Usage:
+
+  -e, --dateEnrich  <date_time_col>          Using a date/time string column as a source add additional date/year/month
+                                             columns to allow smarter partitioning.
+  -l, --delimeter  <char>                    CSV delimeter character, default is ','.
+  -d, --destFile  <path/file.parquet>        Destination Parquet file to export to. Local FS or HDFS paths supported.
+  -p, --partitionCols  <column,column,...>   Partition columns.
+  -f, --schemaFile  </path/to/file.schema>   Schema file path.
+  -q, --slashEscapes                         Use '\"' as an escape character instead of '""' to denote quotes within a quote.
+  -o, --sortCols  <column,column,...>        Sort columns.
+  -t, --sparkThreads  <n>                    Number of Spark threads, default is # processors.
+  -s, --srcFile  </path/to/file.csv>         CSV file to import.
+  -w, --twitterCleanse                       Remove corrupted rows in Twitter sourced CSV files.
   -h, --help                                 Show help message
+
 ```
 
 ### Schema Files
