@@ -1,15 +1,9 @@
 package com.github.nwrs.parquet.importer
 
 import org.apache.spark.sql._
-import org.apache.spark.sql.functions.{callUDF, col}
 import org.rogach.scallop._
 
 object App {
-
-  def parseAndAppendArrayCol[T](srcCol:String, df:DataFrame)(implicit sc:SparkSession):DataFrame= {
-    sc.sqlContext.udf.register("expand_array", (arrayStr: String) => if (arrayStr!=null && arrayStr.nonEmpty) arrayStr.substring(1,arrayStr.length-1).split(",").map(_.trim) else Array[String]())
-    df.withColumn(srcCol+"_array", callUDF("expand_array", col(srcCol)))
-  }
 
   def main(args : Array[String]) {
     val opts = new ScallopConf(args) {
@@ -75,7 +69,7 @@ object App {
     partitioned.parquet(opts.destFile())
     sorted.printSchema()
 
-    // apply arrays
+    // TODO apply arrays
     //parseAndAppendArrayCol("hashtags", enriched)
 
   }

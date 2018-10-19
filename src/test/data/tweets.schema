@@ -1,3 +1,5 @@
+# Schema for Tweet dataset CVS files at https://about.twitter.com/en_us/values/elections-integrity.html#data
+# Find this file at https://github.com/nwrs/hdfs-parquet-importer/blob/master/src/test/data/tweets.schema
 tweetid=Long
 userid=String
 user_display_name=String

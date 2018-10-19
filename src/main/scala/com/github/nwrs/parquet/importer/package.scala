@@ -86,5 +86,17 @@ package object importer {
     df.filter("tweetid NOT IN " + badTweetIds.mkString("(", ",", ")"))
   }
 
+  /**
+    *
+    * @param srcCol
+    * @param df
+    * @param sc
+    * @return
+    */
+  def parseAndAppendArrayCol(srcCol:String, df:DataFrame)(implicit sc:SparkSession):DataFrame= {
+    sc.sqlContext.udf.register("expand_array", (arrayStr: String) => if (arrayStr!=null && arrayStr.nonEmpty) arrayStr.substring(1,arrayStr.length-1).split(",").map(_.trim) else Array[String]())
+    df.withColumn(srcCol+"_array", callUDF("expand_array", col(srcCol)))
+  }
+
 
 }
