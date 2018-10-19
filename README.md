@@ -1,6 +1,6 @@
 ## HDFS Parquet Importer
 
-A simple tool to convert CSV files to Parquet format and import into HDFS.
+A standalone Spark application to convert CSV files to Parquet format and import into HDFS.
 
 * Converts from CSV to Parquet format.
 * Supports either schema inference or the supply of an explicitly typed schema.
@@ -9,8 +9,6 @@ A simple tool to convert CSV files to Parquet format and import into HDFS.
 * Resulting Parquet files are either written to local filesystem or imported to HDFS
 
 Motivation: The analysis of large CSV formatted Twitter datasets such as [this](https://about.twitter.com/en_us/values/elections-integrity.html#data).
-
-For more information on how to best optimise Parquet for read performance see [this](https://www.slideshare.net/RyanBlue3/parquet-performance-tuning-the-missing-guide) presentation. 
 
 ### Build
 ```
@@ -39,13 +37,13 @@ Usage:
   -e, --dateEnrich  <date_time_col>          Using a date/time string column as a source add additional date/year/month
                                              columns to allow smarter partitioning.
   -l, --delimeter  <char>                    CSV delimeter character, default is ','.
-  -d, --destFile  <path/file.parquet>        Destination Parquet file to export to. Local FS or HDFS paths supported.
+  -d, --destFile   <path/file.parquet>       Destination Parquet file to export to. Local FS or HDFS paths supported.
   -p, --partitionCols  <column,column,...>   Partition columns.
-  -f, --schemaFile  </path/to/file.schema>   Schema file path.
+  -f, --schemaFile </path/to/file.schema>    Schema file path.
   -q, --slashEscapes                         Use '\"' as an escape character instead of '""' to denote quotes within a quote.
-  -o, --sortCols  <column,column,...>        Sort columns.
+  -o, --sortCols   <column,column,...>       Sort columns.
   -t, --sparkThreads  <n>                    Number of Spark threads, default is # processors.
-  -s, --srcFile  </path/to/file.csv>         CSV file to import.
+  -s, --srcFile    </path/to/file.csv>       CSV file to import.
   -w, --twitterCleanse                       Remove corrupted rows in Twitter sourced CSV files.
   -h, --help                                 Show help message
 
@@ -58,3 +56,10 @@ If no schema is provided schemas will be inferred by the data. To use an explici
 * Supported types are String, Long, Int, Double, Float or Boolean.
 * Comment character is '\#'.
 * Full example for a simple Twitter dataset [here](https://github.com/nwrs/hdfs-parquet-importer/blob/master/src/test/data/tweets.schema)
+
+
+### Tips
+
+For more information on how to best optimise Parquet for read performance see [this](https://www.slideshare.net/RyanBlue3/parquet-performance-tuning-the-missing-guide) essential presentation from the Netflix engineering team.
+
+For longer running imports the Spark GUI can be used to view progress, the default location is [http://localhost:4040/jobs/](http://nrs-macbook-pro:4040/jobs/)
