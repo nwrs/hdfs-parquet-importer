@@ -31,7 +31,3 @@ hashtags=String
 urls=String
 user_mentions=String
 poll_choices=String
-#hashtags=Array[String]
-#urls=Array[String]
-#user_mentions=Array[String]
-#poll_choices=Array[String]
