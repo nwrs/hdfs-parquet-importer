@@ -51,7 +51,7 @@ Usage:
 
 ### Schema Files
 
-If no schema is provided schemas will be inferred by the data. To use an explicit schema provide schema a config file:
+If no schema is provided schemas will be inferred by the data. To use an explicit schema a config file should be provided:
 * Schema file format is columnName=Type 
 * Supported types are String, Long, Int, Double, Float or Boolean.
 * Comment character is '\#'.
