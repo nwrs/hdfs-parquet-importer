@@ -1,17 +1,18 @@
 ## HDFS Parquet Importer
 
-A tool to convert CSV files to Parquet format and import into HDFS.
+A simple tool to convert CSV files to Parquet format and import into HDFS.
 
 * Converts from CSV to Parquet format.
-* Supports either schema inference or the supply of a specific schema.
-* Optionally sorts and repartitions by multiple columns to optimise for filtering and read performance.
+* Supports either schema inference or the supply of an explicitly typed schema.
+* Optionally sorts and re-partitions by multiple columns to optimise for filtering and read performance.
 * Optionally adds enriched/reformatted date fields to allow for smarter date based partitioning.
 * Resulting Parquet files are either written to local filesystem or imported to HDFS
 
 Motivation: The analysis of large CSV formatted Twitter datasets such as [this](https://about.twitter.com/en_us/values/elections-integrity.html#data).
 
-### Build
+For more information on how to best optimise Parquet for read performance see [this](https://www.slideshare.net/RyanBlue3/parquet-performance-tuning-the-missing-guide) presentation. 
 
+### Build
 ```
 $ git clone https://github.com/nwrs/hdfs-parquet-importer.git
 $ cd hdfs-parquet-importer
@@ -26,8 +27,7 @@ $java -jar hdfs-parquet-importer-1.0-SNAPSHOT-packaged.jar --srcFile /Users/nwrs
   --partitionCols year,month \
   --sortCols hashtags
 ```
-
-### Full Cmd Line Options
+### Command Line Options
 
 ```
 $java -jar hdfs-parquet-importer-1.0-SNAPSHOT-packaged.jar --help
