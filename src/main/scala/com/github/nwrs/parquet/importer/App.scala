@@ -20,7 +20,7 @@ object App {
       val sortCols = opt[String]("sortCols", descr = "Sort columns.", short = 'o', argName="column,column,...")
       val slashEscapes = opt[Boolean]("slashEscapes", descr = """Use '\"' as an escape character instead of '""' to denote quotes within a quote.""", short = 'q')
       val delimeter = opt[String]("delimeter", descr = "CSV delimeter character, default is ','.", short = 'l', default = Some(","), argName="char")
-      val sparkThreads = opt[String]("sparkThreads", descr = "Number of Spark threads, default is # processors.", short = 't', default = Some("*"), argName="n")
+      val sparkThreads = opt[String]("threads", descr = "Number of Spark threads, default is # processors.", short = 't', default = Some("*"), argName="n")
       val twitterCleanse = opt[Boolean]("twitterCleanse", descr = "Remove corrupted rows in Twitter sourced CSV files.", short = 'w')
       helpWidth(120)
       verify()

@@ -42,7 +42,7 @@ Usage:
   -f, --schemaFile </path/to/file.schema>    Schema file path.
   -q, --slashEscapes                         Use '\"' as an escape character instead of '""' to denote quotes within a quote.
   -o, --sortCols   <column,column,...>       Sort columns.
-  -t, --sparkThreads  <n>                    Number of Spark threads, default is # processors.
+  -t, --threads    <n>                       Number of Spark threads, default is # processors.
   -s, --srcFile    </path/to/file.csv>       CSV file to import.
   -w, --twitterCleanse                       Remove corrupted rows in Twitter sourced CSV files.
   -h, --help                                 Show help message
