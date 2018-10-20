@@ -1,6 +1,6 @@
 ## HDFS Parquet Importer
 
-A standalone Spark application to convert CSV files to Parquet format and import into HDFS.
+A simple standalone Spark application to convert CSV files to Parquet format and import into HDFS.
 
 * Converts from CSV to Parquet format.
 * Supports either schema inference or the supply of an explicitly typed schema.
@@ -51,7 +51,7 @@ Usage:
 
 ### Schema Files
 
-If no schema is provided schemas will be inferred by the data. To use an explicit schema a config file should be provided:
+If no schema is provided it will be inferred. To use an explicit schema a config file should be provided:
 * Schema file format is columnName=Type 
 * Supported types are String, Long, Int, Double, Float or Boolean.
 * Comment character is '\#'.
@@ -60,6 +60,6 @@ If no schema is provided schemas will be inferred by the data. To use an explici
 
 ### Tips
 
-For more information on how to best optimise Parquet for read performance see [this](https://www.slideshare.net/RyanBlue3/parquet-performance-tuning-the-missing-guide) essential presentation from the Netflix engineering team.
+For information on optimising Parquet for read performance see [this](https://www.slideshare.net/RyanBlue3/parquet-performance-tuning-the-missing-guide) from the Netflix engineering team.
 
 For longer running imports the Spark GUI can be used to view progress, the default location is [http://localhost:4040/jobs/](http://nrs-macbook-pro:4040/jobs/)
