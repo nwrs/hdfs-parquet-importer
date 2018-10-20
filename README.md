@@ -23,7 +23,7 @@ $java -jar hdfs-parquet-importer-1.0-SNAPSHOT-packaged.jar --srcFile /Users/nwrs
   --destFile hdfs://localhost:9000/trolls/tweets.parquet \
   --dateEnrich tweet_time \
   --partitionCols year,month \
-  --sortCols hashtags
+  --sortCols userid
 ```
 ### Command Line Options
 
