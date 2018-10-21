@@ -12,7 +12,6 @@ object App {
     implicit val ss = SparkSession.builder
       .appName("CSV -> Parquet Importer")
       .config("spark.debug.maxToStringFields","100")
-      .config("spark.sql.shuffle.partitions",1)
       .master(s"local[${conf.sparkThreads()}]").getOrCreate()
     val df = readCSVWriteParquet(conf)
     log.info("Done")
