@@ -3,10 +3,13 @@ package com.github.nwrs.parquet
 import org.apache.spark.sql.{ColumnName, DataFrame, SparkSession}
 import org.apache.spark.sql.functions.{callUDF, col}
 import org.apache.spark.sql.types.StructType
+import org.slf4j.{Logger, LoggerFactory}
 
 import scala.io.Source
 
 package object importer {
+
+  lazy val log:Logger = LoggerFactory.getLogger(this.getClass)
 
   /**
     * Populate a spark schema using a config file of the format columnName=Type
@@ -86,17 +89,75 @@ package object importer {
     df.filter("tweetid NOT IN " + badTweetIds.mkString("(", ",", ")"))
   }
 
+
   /**
-    *
-    * @param srcCol
-    * @param df
-    * @param sc
-    * @return
+    * Append a new column of type Array[String] sourced from a string column containing data in the format "[element1, element2, element3]"
+    * @param srcCol The column name containing a string formatted as "[text, text, text]"
+    * @param df Dataframe
+    * @param sc SparkSession
+    * @return Dataframe with added column
     */
-  def parseAndAppendArrayCol(srcCol:String, df:DataFrame)(implicit sc:SparkSession):DataFrame= {
+  def parseAndAppendArrayCol(srcCol:String, df:DataFrame, removeSrc:Boolean)(implicit sc:SparkSession):DataFrame= {
     sc.sqlContext.udf.register("expand_array", (arrayStr: String) => if (arrayStr!=null && arrayStr.nonEmpty) arrayStr.substring(1,arrayStr.length-1).split(",").map(_.trim) else Array[String]())
     df.withColumn(srcCol+"_array", callUDF("expand_array", col(srcCol)))
   }
 
+  def readCSVWriteParquet(conf: Config)(implicit ss:SparkSession):DataFrame = {
+    // create csv reader
+    val reader = ss.read
+      .option("header", "true")
+      .option("mode", "DROPMALFORMED")
+      .option("charset", "UTF8")
+      .option("delimiter", conf.delimiter())
+      .option("escape", if (conf.slashEscapes.isDefined) "\\" else "\"")
+
+    // populate schema from config file if configured
+    if (conf.schemaFile.isDefined) {
+      log.info(s"Schema is '${conf.schemaFile()}'")
+      reader.schema(createSchema(conf.schemaFile()))
+    } else {
+      log.info("Inferring schema")
+    }
+
+    // read file
+    log.info(s"Reading '${conf.srcFile()}'")
+    val df = reader.csv(conf.srcFile())
+
+    // Cleanse any corrupted rows that can occur in some Twitter sourced datasets
+    val cleansed = if (conf.twitterCleanse()) {
+      log.info("Cleansing corrupted rows")
+      filterOutSuspectTwitterRows(df)
+    } else
+      df
+
+    // enrich with expanded date fields
+    val enriched = if(conf.dateEnrich.isDefined) {
+      log.info(s"Enriching with date columns from '${conf.dateEnrich()}'")
+      dateEnrichFromDateTimeStr(conf.dateEnrich(), cleansed)
+    } else
+      cleansed
+
+    // sort
+    val sorted = if (conf.sortCols.isDefined) {
+      val sortCols = conf.sortCols().split(",").map(_.trim).map(enriched(_))
+      log.info(s"Sorting by ${sortCols.mkString(", ")}")
+      enriched.sort(sortCols :_*)
+    } else
+      enriched
+
+    // partition and write
+    if(conf.partitionCols.isDefined) {
+      val partCols = conf.partitionCols().split(",").map(_.trim)
+      log.info(s"Partitioning by ${partCols.mkString(", ")}")
+      val partitioned = sorted.repartition(partCols.map(sorted(_)) :_*)
+      log.info(s"Writing '${conf.destFile()}'")
+      partitioned.write.partitionBy(partCols :_*).parquet(conf.destFile())
+      partitioned
+    } else {
+      log.info(s"Writing '${conf.destFile()}'")
+      sorted.write.parquet(conf.destFile())
+      sorted
+    }
+  }
 
 }

@@ -24,9 +24,20 @@ $java -jar hdfs-parquet-importer-1.0-SNAPSHOT-packaged.jar --srcFile /Users/nwrs
   --dateEnrich tweet_time \
   --partitionCols year,month \
   --sortCols userid
+  --twitterCleanse
+  
+HDFS Parquet CSV file importer [github.com/nwrs/hdfs-parquet-importer]
+Schema is '/Users/nwrs/tweets.schema'
+Reading '/Users/nwrs/ira_tweets_csv_hashed.csv'
+Cleansing corrupted rows
+Enriching with date columns from 'tweet_time'
+Sorting by userid
+Partitioning by year, month
+Writing 'hdfs://localhost:9000/trolls/tweets.parquet'
+Done 
 ```
-### Command Line Options
 
+### Command Line Options
 ```
 $java -jar hdfs-parquet-importer-1.0-SNAPSHOT-packaged.jar --help
 
