@@ -86,7 +86,10 @@ package object importer {
         case _ => Some(r.getLong(0))
       }
     }.filter(_.isDefined).map(_.get).collect
-    df.filter("tweetid NOT IN " + badTweetIds.mkString("(", ",", ")"))
+    if (badTweetIds.length > 0)
+      df.filter("tweetid NOT IN " + badTweetIds.mkString("(", ",", ")"))
+    else
+      df
   }
 
 
