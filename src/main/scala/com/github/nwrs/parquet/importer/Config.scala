@@ -18,6 +18,7 @@ class Config(args:Array[String]) extends ScallopConf(args) {
     val delimiter = opt[String]("delimeter", descr = "CSV delimiter character, default is ','.", short = 'l', default = Some(","), argName="char")
     val sparkThreads = opt[String]("threads", descr = "Number of Spark threads, default is # processors.", short = 't', default = Some("*"), argName="n")
     val twitterCleanse = opt[Boolean]("twitterCleanse", descr = "Remove corrupted rows in Twitter sourced CSV files.", short = 'w', default = Some(false))
+    val sparkOpt = opt[String]("sparkOpt", descr = "Additional Spark options.", short = 'k', argName="opt=value,opt=value,...")
     helpWidth(120)
     verify()
 }
